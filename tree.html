@@ -42,7 +42,7 @@
 				var scale = 0.75
 
                 drawTree( x1, y1, x2, y2, angle, depth, scale );
-				document.getElementById('depth').onchange = function() {
+				document.getElementById('depth').oninput = function() {
 					depth = document.getElementById('depth').value;
 					clearTree();
 					drawTree( x1, y1, x2, y2, angle, depth, scale );
