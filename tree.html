@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>tree</title>
+    </head>
+
+    <body onload="init();">
+
+        <canvas id="canvas" width="1200" height="600" ></canvas>
+
+        <script type="text/javascript" >
+
+            init = function() {
+				var canvas = document.getElementById("canvas");
+				canvas.width = window.innerWidth - 50; //document.width is obsolete
+				canvas.height = window.innerHeight - 50; //document.height is obsolete
+				canvasW = canvas.width;
+				canvasH = canvas.height;
+				var w = window,
+					d = document,
+					e = d.documentElement,
+					g = d.getElementsByTagName('body')[0],
+					x = w.innerWidth || e.clientWidth || g.clientWidth,
+					y = w.innerHeight|| e.clientHeight|| g.clientHeight;				
+                var x1 = canvasW/2;
+                var y1 = canvasH-20;
+
+                var x2 = canvasW/2;
+                var y2 = canvasH-120;
+
+                var angle = 0.1 * Math.PI;
+                var depth = 5;
+				var scale = 0.75
+
+                drawTree( x1, y1, x2, y2, angle, depth, scale );
+            }
+
+            drawTree = function( x1, y1, x2, y2, angle, depth, scale ){
+                var context = document.getElementById('canvas').getContext('2d');
+
+                context.strokeStyle = 'rgb( 0, 0, 0 )';
+                context.lineWidth = depth;
+                context.beginPath();
+                context.moveTo( x1, y1 );
+                context.lineTo( x2, y2 );
+                context.stroke();
+
+                if( depth > 0 ){
+                    var x = x2 - x1;
+                    var y = y2 - y1;
+
+                    x *= scale;
+                    y *= scale;
+
+                    var xLeft = x * Math.cos( -angle ) - y * Math.sin( -angle );
+                    var yLeft = x * Math.sin( -angle ) + y * Math.cos( -angle );
+
+                    var xRight = x * Math.cos( +angle ) - y * Math.sin( +angle );
+                    var yRight = x * Math.sin( +angle ) + y * Math.cos( +angle );
+
+                    xLeft += x2;
+                    yLeft += y2;
+
+                    xRight += x2;
+                    yRight += y2;
+
+                    drawTree( x2, y2, xLeft, yLeft, angle, depth - 1, scale );
+                    drawTree( x2, y2, xRight, yRight, angle, depth - 1, scale );
+                }
+            }
+
+       </script>
+    </body>
+</html>
