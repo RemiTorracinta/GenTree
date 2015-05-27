@@ -5,7 +5,7 @@
     </head>
 	<!--Thanks to Marlen Julie, http://stackoverflow.com/users/4321140/marlen-julie for original canvas tree code-->
     <body onload="init();">
-	    <div id="slider" style='float:left;'>
+	    <div id="slider" style='float:left; padding: 0px 10px;'>
 			<h4>Depth</h4>
 			<form>
 				<label>1</label>
@@ -14,7 +14,7 @@
 			</form>
 			<br>
 	    </div>
-		<div id="slider" style='float:left;'>
+		<div id="slider" style='float:left; padding: 0px 10px;'>
 			<h4>Scaling</h4>
 			<form>
 				<label>0</label>
@@ -23,11 +23,29 @@
 			</form>
 			<br>
 	    </div >
-		<div id="slider" style='float:left;'>
+		<div id="slider" style='float:left; padding: 0px 10px;'>
 			<h4>Angle</h4>
 			<form>
 				<label>0</label>
 				<input type="range" id="angle" value="0.3" min="0" max="3.14" step="0.01">
+				<label>360</label>
+			</form>
+			<br>
+	    </div>
+		<div id="slider" style='float:left; padding: 0px 10px;'>
+			<h4>Left Offset</h4>
+			<form>
+				<label>0</label>
+				<input type="range" id="lSet" value="1" min="0" max="1" step="0.01">
+				<label>1</label>
+			</form>
+			<br>
+	    </div>
+		<div id="slider" style='float:left; padding: 0px 10px;'>
+			<h4>Right Offset</h4>
+			<form>
+				<label>0</label>
+				<input type="range" id="rSet" value="1" min="0" max="1" step="0.01">
 				<label>1</label>
 			</form>
 			<br>
@@ -42,45 +60,51 @@
 				canvas.width = window.innerWidth - 50; //document.width is obsolete
 				canvas.height = window.innerHeight - 150; //document.height is obsolete
 				canvasW = canvas.width;
-				canvasH = canvas.height;
-				var w = window,
-					d = document,
-					e = d.documentElement,
-					g = d.getElementsByTagName('body')[0],
-					x = w.innerWidth || e.clientWidth || g.clientWidth,
-					y = w.innerHeight|| e.clientHeight|| g.clientHeight;				
+				canvasH = canvas.height;			
                 var x1 = canvasW/2;
-                var y1 = canvasH-20;
+                var y1 = canvasH-120;
 
                 var x2 = canvasW/2;
-                var y2 = canvasH-120;
+                var y2 = canvasH-220;
 
-                var angle = document.getElementById('angle').value;
-                var depth = document.getElementById('depth').value;
-				var scale = document.getElementById('scale').value;
-
-                drawTree( x1, y1, x2, y2, angle, depth, scale );
+                var angle = document.getElementById('angle').value; //Branching angle
+                var depth = document.getElementById('depth').value; //Number of branches
+				var scale = document.getElementById('scale').value; //Size of next branch relative to current
+				var lSet = document.getElementById('lSet').value; //Starting point of left branch along current
+				var rSet = document.getElementById('rSet').value; //Starting point of right branch along current
+                drawTree( x1, y1, x2, y2, angle, depth, scale, lSet, rSet);
 				document.getElementById('depth').oninput = function() {
 					depth = document.getElementById('depth').value;
 					clearTree();
-					drawTree( x1, y1, x2, y2, angle, depth, scale );
+					drawTree( x1, y1, x2, y2, angle, depth, scale, lSet, rSet );
 				};
 				document.getElementById('angle').oninput = function() {
 					angle = document.getElementById('angle').value;
 					clearTree();
-					drawTree( x1, y1, x2, y2, angle, depth, scale );
+					drawTree( x1, y1, x2, y2, angle, depth, scale, lSet, rSet );
 				};
 				document.getElementById('scale').oninput = function() {
 					scale = document.getElementById('scale').value;
 					clearTree();
-					drawTree( x1, y1, x2, y2, angle, depth, scale );
+					drawTree( x1, y1, x2, y2, angle, depth, scale, lSet, rSet );
 				};
+				document.getElementById('lSet').oninput = function() {
+					lSet = document.getElementById('lSet').value;
+					clearTree();
+					drawTree( x1, y1, x2, y2, angle, depth, scale, lSet, rSet );
+				};
+				document.getElementById('rSet').oninput = function() {
+					rSet = document.getElementById('rSet').value;
+					clearTree();
+					drawTree( x1, y1, x2, y2, angle, depth, scale, lSet, rSet );
+				};
+				
             }
 			clearTree = function () {
 				var context = document.getElementById('canvas').getContext('2d');
 				context.clearRect(0, 0, canvas.width, canvas.height);
 			}
-            drawTree = function( x1, y1, x2, y2, angle, depth, scale ){
+            drawTree = function( x1, y1, x2, y2, angle, depth, scale, lSet, rSet){
                 var context = document.getElementById('canvas').getContext('2d');
 
                 context.strokeStyle = 'rgb( 0, 0, 0 )';
@@ -96,21 +120,24 @@
 
                     x *= scale;
                     y *= scale;
-
+					var lxOffset = x*(1-lSet);
+					var lyOffset =y*(1-lSet);
+					var rxOffset = x*(1-rSet);
+					var ryOffset =y*(1-rSet);
                     var xLeft = x * Math.cos( -angle ) - y * Math.sin( -angle );
                     var yLeft = x * Math.sin( -angle ) + y * Math.cos( -angle );
 
                     var xRight = x * Math.cos( +angle ) - y * Math.sin( +angle );
                     var yRight = x * Math.sin( +angle ) + y * Math.cos( +angle );
+					
+                    xLeft += x2-lxOffset;
+                    yLeft += y2-lyOffset;
 
-                    xLeft += x2;
-                    yLeft += y2;
+                    xRight += x2-rxOffset;
+                    yRight += y2-ryOffset;
 
-                    xRight += x2;
-                    yRight += y2;
-
-                    drawTree( x2, y2, xLeft, yLeft, angle, depth - 1, scale );
-                    drawTree( x2, y2, xRight, yRight, angle, depth - 1, scale );
+                    drawTree( x2-lxOffset, y2-lyOffset, xLeft, yLeft, angle, depth - 1, scale , lSet, rSet);
+                    drawTree( x2-rxOffset, y2-ryOffset, xRight, yRight, angle, depth - 1, scale , lSet, rSet);
                 }
             }
 
