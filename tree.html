@@ -5,12 +5,30 @@
     </head>
 	<!--Thanks to Marlen Julie, http://stackoverflow.com/users/4321140/marlen-julie for original canvas tree code-->
     <body onload="init();">
-	    <div id="slider">
+	    <div id="slider" style='float:left;'>
 			<h4>Depth</h4>
 			<form>
 				<label>1</label>
 				<input type="range" id="depth" value="5" min="1" max="10" step="1">
 				<label>10</label>
+			</form>
+			<br>
+	    </div>
+		<div id="slider" style='float:left;'>
+			<h4>Scaling</h4>
+			<form>
+				<label>0</label>
+				<input type="range" id="scale" value="0.75" min="0" max="1" step="0.01">
+				<label>1</label>
+			</form>
+			<br>
+	    </div >
+		<div id="slider" style='float:left;'>
+			<h4>Angle</h4>
+			<form>
+				<label>0</label>
+				<input type="range" id="angle" value="0.3" min="0" max="3.14" step="0.01">
+				<label>1</label>
 			</form>
 			<br>
 	    </div>
@@ -37,13 +55,23 @@
                 var x2 = canvasW/2;
                 var y2 = canvasH-120;
 
-                var angle = 0.1 * Math.PI;
+                var angle = document.getElementById('angle').value;
                 var depth = document.getElementById('depth').value;
-				var scale = 0.75
+				var scale = document.getElementById('scale').value;
 
                 drawTree( x1, y1, x2, y2, angle, depth, scale );
 				document.getElementById('depth').oninput = function() {
 					depth = document.getElementById('depth').value;
+					clearTree();
+					drawTree( x1, y1, x2, y2, angle, depth, scale );
+				};
+				document.getElementById('angle').oninput = function() {
+					angle = document.getElementById('angle').value;
+					clearTree();
+					drawTree( x1, y1, x2, y2, angle, depth, scale );
+				};
+				document.getElementById('scale').oninput = function() {
+					scale = document.getElementById('scale').value;
 					clearTree();
 					drawTree( x1, y1, x2, y2, angle, depth, scale );
 				};
