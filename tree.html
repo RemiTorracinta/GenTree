@@ -5,15 +5,24 @@
     </head>
 	<!--Thanks to Marlen Julie, http://stackoverflow.com/users/4321140/marlen-julie for original canvas tree code-->
     <body onload="init();">
-
-        <canvas id="canvas" width="1200" height="600" ></canvas>
-
+	    <div id="slider">
+			<h4>Depth</h4>
+			<form>
+				<label>1</label>
+				<input type="range" id="depth" value="5" min="1" max="10" step="1">
+				<label>10</label>
+			</form>
+			<br>
+	    </div>
+	    <div id="main" class="main">
+			<canvas id="canvas" width="1200" height="600" ></canvas>
+	    </div>
         <script type="text/javascript" >
 
             init = function() {
 				var canvas = document.getElementById("canvas");
 				canvas.width = window.innerWidth - 50; //document.width is obsolete
-				canvas.height = window.innerHeight - 50; //document.height is obsolete
+				canvas.height = window.innerHeight - 150; //document.height is obsolete
 				canvasW = canvas.width;
 				canvasH = canvas.height;
 				var w = window,
@@ -29,12 +38,20 @@
                 var y2 = canvasH-120;
 
                 var angle = 0.1 * Math.PI;
-                var depth = 5;
+                var depth = document.getElementById('depth').value;
 				var scale = 0.75
 
                 drawTree( x1, y1, x2, y2, angle, depth, scale );
+				document.getElementById('depth').onchange = function() {
+					depth = document.getElementById('depth').value;
+					clearTree();
+					drawTree( x1, y1, x2, y2, angle, depth, scale );
+				};
             }
-
+			clearTree = function () {
+				var context = document.getElementById('canvas').getContext('2d');
+				context.clearRect(0, 0, canvas.width, canvas.height);
+			}
             drawTree = function( x1, y1, x2, y2, angle, depth, scale ){
                 var context = document.getElementById('canvas').getContext('2d');
 
